@@ -1,10 +1,11 @@
-package com.example.transform_asm.util;
+package com.example.moidifyfinal;
 
 import android.util.Log;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 
 public abstract class Reflection {
@@ -206,6 +207,37 @@ public abstract class Reflection {
 
         return null;
     }
+
+    public static void setFinalStaticFieldValue(final Class<?> klass, final String name, final Object newValue) {
+        Field field = getField(klass, name);
+        if (field == null) {
+            return;
+        }
+        Field modifierField = getField(Field.class, "accessFlags");// android用"accessFlags"，纯java用"modifiers"
+        modifierField.setAccessible(true);
+        try {
+            modifierField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
+            field.set(null, newValue);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void setFinalFieldValue(final Object obj, final String name, final Object newValue) {
+        Field field = getField(obj.getClass(), name);
+        if (field == null) {
+            return;
+        }
+        Field modifierField = getField(Field.class, "accessFlags");// android用"accessFlags"，纯java用"modifiers"
+        modifierField.setAccessible(true);
+        try {
+            modifierField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
+            field.set(obj, newValue);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     private static Method getMethod(final Class<?> klass, final String name, final Class<?>[] types) {
         try {
