@@ -1,6 +1,6 @@
 apply plugin: 'groovy'// 插件开发必备: groovy
 apply plugin: 'maven'// 发布插件用
-apply plugin: 'kotlin'// kotlin
+apply plugin: 'kotlin'// kotlin支持
 
 dependencies {
     implementation gradleApi()//gradle sdk
@@ -26,6 +26,7 @@ repositories {
     jcenter()
 }
 
+kotlin支持
 compileGroovy {
     dependsOn tasks.getByPath('compileKotlin')
     classpath += files(compileKotlin.destinationDir)
