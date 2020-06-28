@@ -12,7 +12,7 @@ fi
 # 添加git前缀
 cmd="git ${cmd}"
 
-cd /Users/a58/58/app/58town/
+# cd ****，使用当前目录
 
 # 提取git子目录
 # 定义数组
