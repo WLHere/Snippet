@@ -12,7 +12,11 @@ fi
 # 添加git前缀
 cmd="git ${cmd}"
 
-# cd ****，使用当前目录
+if [ -d "../.git" ]; then
+	cd ..
+fi
+echo "当前目录"
+pwd
 
 # 提取git子目录
 # 定义数组
@@ -47,4 +51,3 @@ do
     eval "cd .."
 done
 echo $line
-
