@@ -8,7 +8,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 
-public abstract class Reflection {
+public class Reflection {
     private static final String TAG = "Reflection";
 
     @SuppressWarnings("unchecked")
