@@ -8,21 +8,21 @@ import androidx.lifecycle.Observer;
 import java.util.concurrent.ConcurrentHashMap;
 
 
-public class NonStickyLiveData<T> extends androidx.lifecycle.LiveData<T> {
-    private ConcurrentHashMap<androidx.lifecycle.Observer, ObserverWrapper> observerMapping = new ConcurrentHashMap<>();
+public class NonStickyLiveData<T> extends LiveData<T> {
+    private ConcurrentHashMap<Observer, ObserverWrapper> observerMapping = new ConcurrentHashMap<>();
 
     @Override
-    public void observe(@androidx.annotation.NonNull LifecycleOwner owner, @androidx.annotation.NonNull androidx.lifecycle.Observer<? super T> observer) {
+    public void observe(@NonNull LifecycleOwner owner, @NonNull Observer<? super T> observer) {
         super.observe(owner, wrap(observer));
     }
 
     @Override
-    public void observeForever(@androidx.annotation.NonNull androidx.lifecycle.Observer<? super T> observer) {
+    public void observeForever(@NonNull Observer<? super T> observer) {
         super.observeForever(wrap(observer));
     }
 
     @Override
-    public void removeObserver(@androidx.annotation.NonNull androidx.lifecycle.Observer<? super T> observer) {
+    public void removeObserver(@NonNull Observer<? super T> observer) {
         ObserverWrapper wrapper = observerMapping.remove(observer);
         if (wrapper != null) {
             super.removeObserver(wrapper);
@@ -41,9 +41,12 @@ public class NonStickyLiveData<T> extends androidx.lifecycle.LiveData<T> {
         super.setValue(value);
     }
 
-    private androidx.lifecycle.Observer wrap(androidx.lifecycle.Observer<? super T> observer) {
-        ObserverWrapper proxyObserver = new ObserverWrapper(observer);
-        observerMapping.put(observer, proxyObserver);
+    private Observer wrap(Observer<? super T> observer) {
+        ObserverWrapper proxyObserver = observerMapping.get(observer);
+        if (proxyObserver == null) {
+            proxyObserver = new ObserverWrapper(observer);
+            observerMapping.put(observer, proxyObserver);
+        }
         return proxyObserver;
     }
 
@@ -51,11 +54,11 @@ public class NonStickyLiveData<T> extends androidx.lifecycle.LiveData<T> {
      * 包装observer。可以忽略第一次的onChanged回调
      * @param <T>
      */
-    private class ObserverWrapper<T> implements androidx.lifecycle.Observer<T> {
-        private final androidx.lifecycle.Observer targetObserver;
+    private class ObserverWrapper<T> implements Observer<T> {
+        private final Observer targetObserver;
         private boolean ignoreOnce;
 
-        public ObserverWrapper(androidx.lifecycle.Observer targetObserver) {
+        public ObserverWrapper(Observer targetObserver) {
             this.targetObserver = targetObserver;
             this.ignoreOnce = getValue() != null;
         }
